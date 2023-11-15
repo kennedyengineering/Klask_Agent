@@ -1,0 +1,3 @@
+[submodule "modules/Klask_Simulator"]
+	path = modules/Klask_Simulator
+	url = git@github.com:kennedyengineering/Klask_Simulator.git
