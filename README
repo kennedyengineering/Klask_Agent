@@ -1,0 +1,24 @@
+PettingZoo:
+https://github.com/Farama-Foundation/PettingZoo
+
+pip install pettingzoo
+
+#-------------------------------------------------------------------------
+
+StableBaselines3:
+https://stable-baselines3.readthedocs.io/en/master/guide/install.html
+
+pip install stable-baselines3
+
+Example PettingZoo + StableBaselines3 training:
+https://pettingzoo.farama.org/tutorials/sb3/waterworld/
+
+pip install supersuit
+
+#-------------------------------------------------------------------------
+
+install Klask_Environment dependencies:
+pip install -r requirements.txt
+
+also install Klask_Simulator dependencies:
+pip install -r modules/Klask_Simulator/requirements.txt
