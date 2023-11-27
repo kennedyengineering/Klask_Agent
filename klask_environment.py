@@ -2,7 +2,8 @@
 
 from modules.Klask_Simulator.klask_simulator import KlaskSimulator
 from modules.Klask_Simulator.klask_constants import KG_BOARD_HEIGHT, KG_BOARD_WIDTH
-from KeyboardController import KeyboardController
+
+from keyboard_controller import KeyboardController
 
 import pygame
 

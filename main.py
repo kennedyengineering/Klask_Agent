@@ -1,7 +1,7 @@
 # Demonstrates a method of input for human players
 
 from modules.Klask_Simulator.klask_simulator import KlaskSimulator
-from KeyboardController import KeyboardController
+from keyboard_controller import KeyboardController
 
 import pygame
 
