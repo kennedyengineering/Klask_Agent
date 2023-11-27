@@ -1,4 +1,5 @@
-# PyTorch implementation of a DQN agent an associated datastructures
+# PyTorch implementation of a DQN agent and associated datastructures
+# Refactored variant of https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html
 
 import torch
 import torch.nn as nn
@@ -69,23 +70,26 @@ class DQN_Agent:
 
     def apply_policy(self, state):
         # Used for inference
-        return self.policy_net(state).max(1).indices.view(1, 1)
+        with torch.no_grad():
+            # t.max(1) will return the largest column value of each row.
+            # second column on max result is index of where max element was
+            # found, so we pick action with the larger expected reward.
+            state = torch.tensor(state, dtype=torch.float32, device=self.device).unsqueeze(0)
+            return self.policy_net(state).max(1).indices.view(1, 1)
 
     def select_action(self, state):
+        # Used for training
         sample = random.random()
         eps_threshold = self.EPS_END + (self.EPS_START - self.EPS_END) * \
             math.exp(-1. * self.steps_done / self.EPS_DECAY)
         self.steps_done += 1
         if sample > eps_threshold:
-            with torch.no_grad():
-                # t.max(1) will return the largest column value of each row.
-                # second column on max result is index of where max element was
-                # found, so we pick action with the larger expected reward.
-                return self.policy_net(state).max(1).indices.view(1, 1)
+            return self.apply_policy(state)
         else:
             return torch.tensor([[random.randrange(self.n_actions)]], device=self.device, dtype=torch.long)
     
     def optimize_model(self):
+        # Used for training
         if len(self.memory) < self.BATCH_SIZE:
             return
         transitions = self.memory.sample(self.BATCH_SIZE)
@@ -140,9 +144,9 @@ class DQN_Agent:
         self.target_net.load_state_dict(target_net_state_dict)
 
     def save(self, PATH):
-        # Save policy to disk
+        # Save policy to disk for later inference
         torch.save(self.policy_net.state_dict(), PATH)
 
     def load(self, PATH):
-        # Load policy from disk
+        # Load policy from disk for later inference
         self.policy_net.load_state_dict(torch.load(PATH))
