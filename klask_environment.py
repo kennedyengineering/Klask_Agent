@@ -65,6 +65,9 @@ def action_to_p2(tup):
 def states_to_p1(states, length_scaler):
     # Convert states into p1 perspective
 
+    if states is None:
+        return None
+
     new_states = []
 
     def convert_state(state):
@@ -82,6 +85,9 @@ def states_to_p1(states, length_scaler):
 
 def states_to_p2(states, length_scaler):
     # Convert states into p2 perspective
+
+    if states is None:
+        return None
 
     new_states = []
 

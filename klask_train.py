@@ -30,6 +30,7 @@ assert agent.device.type == "cuda"
 
 # Determine number of episodes
 num_episodes = 1000
+checkpoint_interval = 200
 
 # Determine episode length
 max_episode_length = 600
@@ -42,10 +43,12 @@ for i_episode in tqdm(range(num_episodes)):
     for t in count():
         # Determine action
         p1_states = states_to_p1(agent_states, sim.length_scaler)
-        p1_action = action_to_p1(actions[agent.select_action(p1_states).item()])
+        p1_action_tensor = agent.select_action(p1_states)
+        p1_action = action_to_p1(actions[p1_action_tensor.item()])
 
         p2_states = states_to_p2(agent_states, sim.length_scaler)
-        p2_action = action_to_p2(actions[agent.apply_policy(p2_states).item()])
+        p2_action_tensor = agent.apply_policy(p2_states)
+        p2_action = action_to_p2(actions[p2_action_tensor.item()])
         # Experiment: p2 also uses select_option, and p2 data is added to replay buffer
 
         # Apply action to environment
@@ -62,7 +65,7 @@ for i_episode in tqdm(range(num_episodes)):
             next_agent_states = None
 
         # Store the transition in memory
-        agent.remember(p1_states, p1_action, states_to_p1(next_agent_states), p1_reward)    # FIXME: states_to_p1 receiveing Nonetype
+        agent.remember(p1_states, p1_action_tensor, states_to_p1(next_agent_states, sim.length_scaler), p1_reward)
         # Experiment: p2 data is also added to replay buffer
 
         # Move to the next state
@@ -74,7 +77,11 @@ for i_episode in tqdm(range(num_episodes)):
         if done:
             break
 
+    # Save checkpoint weights files
+    if i_episode % checkpoint_interval == 0:
+        agent.save(args.WEIGHTS_PATH+"_checkpoint_"+'{:04d}'.format(i_episode))
+
 print("Complete")
-agent.save(args.WEIGHTS_PATH)
+agent.save(args.WEIGHTS_PATH+"_final")
 agent.close()
 sim.close()
