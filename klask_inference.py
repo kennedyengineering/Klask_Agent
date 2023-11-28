@@ -10,7 +10,8 @@ import argparse
 
 # Parse arguments
 parser = argparse.ArgumentParser()
-parser.add_argument("WEIGHTS_PATH", default="weights.torch")
+parser.add_argument("WEIGHTS_PATH_1", default="weights.torch")
+parser.add_argument("WEIGHTS_PATH_2", default="weights.torch")
 args = parser.parse_args()
 
 # Create the environment
@@ -24,9 +25,11 @@ _, _, agent_states = sim.reset()
 n_observations = len(agent_states)
 
 # Create the agent
-agent = DQN_Agent(n_observations, n_actions)
-assert agent.device.type == "cuda"
-agent.load(args.WEIGHTS_PATH)
+agent_1 = DQN_Agent(n_observations, n_actions)
+agent_1.load(args.WEIGHTS_PATH_1)
+
+agent_2 = DQN_Agent(n_observations, n_actions)
+agent_2.load(args.WEIGHTS_PATH_2)
 
 # Run inference
 done = False
@@ -34,10 +37,10 @@ done = False
 while not done:
     # Determine action
     p1_states = states_to_p1(agent_states, sim.length_scaler)
-    p1_action = action_to_p1(actions[agent.apply_policy(p1_states).item()])
+    p1_action = action_to_p1(actions[agent_1.apply_policy(p1_states).item()])
 
     p2_states = states_to_p2(agent_states, sim.length_scaler)
-    p2_action = action_to_p2(actions[agent.apply_policy(p2_states).item()])
+    p2_action = action_to_p2(actions[agent_2.apply_policy(p2_states).item()])
 
     # Apply action to environment
     _, game_states, agent_states = sim.step(p1_action, p2_action)
@@ -46,5 +49,6 @@ while not done:
     done = KlaskSimulator.GameStates.PLAYING not in game_states
 
 print("Complete")
-agent.close()
+agent_1.close()
+agent_2.close()
 sim.close()

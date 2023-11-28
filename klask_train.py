@@ -25,8 +25,8 @@ _, _, agent_states = sim.reset()
 n_observations = len(agent_states)
 
 # Create the agent
-agent = DQN_Agent(n_observations, n_actions)
-assert agent.device.type == "cuda"
+agent_1 = DQN_Agent(n_observations, n_actions)
+agent_2 = DQN_Agent(n_observations, n_actions)
 
 # Determine number of episodes
 num_episodes = 1000
@@ -43,11 +43,11 @@ for i_episode in tqdm(range(num_episodes)):
     for t in count():
         # Determine action
         p1_states = states_to_p1(agent_states, sim.length_scaler)
-        p1_action_tensor = agent.select_action(p1_states)
+        p1_action_tensor = agent_1.select_action(p1_states)
         p1_action = action_to_p1(actions[p1_action_tensor.item()])
 
         p2_states = states_to_p2(agent_states, sim.length_scaler)
-        p2_action_tensor = agent.apply_policy(p2_states)
+        p2_action_tensor = agent_2.select_action(p2_states)
         p2_action = action_to_p2(actions[p2_action_tensor.item()])
 
         # Apply action to environment
@@ -64,22 +64,27 @@ for i_episode in tqdm(range(num_episodes)):
             next_agent_states = None
 
         # Store the transition in memory
-        agent.remember(p1_states, p1_action_tensor, states_to_p1(next_agent_states, sim.length_scaler), p1_reward)
+        agent_1.remember(p1_states, p1_action_tensor, states_to_p1(next_agent_states, sim.length_scaler), p1_reward)
+        agent_2.remember(p2_states, p2_action_tensor, states_to_p2(next_agent_states, sim.length_scaler), p2_reward)
 
         # Move to the next state
         agent_states = next_agent_states
 
         # Perform one step of the optimization (on the policy network)
-        agent.optimize_model()
+        agent_1.optimize_model()
+        agent_2.optimize_model()
 
         if done:
             break
 
     # Save checkpoint weights files
     if i_episode % checkpoint_interval == 0:
-        agent.save(args.WEIGHTS_PATH+"_checkpoint_"+'{:04d}'.format(i_episode))
+        agent_1.save(args.WEIGHTS_PATH+"_01_checkpoint_"+'{:04d}'.format(i_episode))
+        agent_2.save(args.WEIGHTS_PATH+"_02_checkpoint_"+'{:04d}'.format(i_episode))
 
 print("Complete")
-agent.save(args.WEIGHTS_PATH+"_final")
-agent.close()
+agent_1.save(args.WEIGHTS_PATH+"_01_final")
+agent_2.save(args.WEIGHTS_PATH+"_02_final")
+agent_1.close()
+agent_2.close()
 sim.close()
