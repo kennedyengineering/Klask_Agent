@@ -1,6 +1,12 @@
 from dqn_agent import DQN_Agent
 from itertools import count
 import gymnasium as gym
+import argparse
+
+# Parse arguments
+parser = argparse.ArgumentParser()
+parser.add_argument("WEIGHTS_PATH")
+args = parser.parse_args()
 
 # Create the environment
 env = gym.make("CartPole-v1", render_mode="human")
@@ -14,7 +20,7 @@ n_observations = len(state)
 
 # Create the agent
 agent = DQN_Agent(n_observations, n_actions)
-agent.load("YO")
+agent.load(args.WEIGHTS_PATH)
 
 # Run inference
 for t in count():

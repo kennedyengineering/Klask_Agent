@@ -68,13 +68,28 @@ class DQN_Agent:
 
         self.steps_done = 0
 
+    def remember(self, state, action, next_state, reward):
+        # Convert to tensor if needed
+        if not torch.is_tensor(state) and state is not None:
+            state = torch.tensor(state, dtype=torch.float32, device=self.device).unsqueeze(0)
+        if not torch.is_tensor(action) and action is not None:
+            torch.tensor([[action]], device=self.device, dtype=torch.long)
+        if not torch.is_tensor(next_state) and next_state is not None:
+            next_state = torch.tensor(next_state, dtype=torch.float32, device=self.device).unsqueeze(0)
+        if not torch.is_tensor(reward) and reward is not None:
+            reward = torch.tensor([reward], device=self.device)
+
+        # Store transition
+        self.memory.push(state, action, next_state, reward)
+
     def apply_policy(self, state):
         # Used for inference
         with torch.no_grad():
             # t.max(1) will return the largest column value of each row.
             # second column on max result is index of where max element was
             # found, so we pick action with the larger expected reward.
-            state = torch.tensor(state, dtype=torch.float32, device=self.device).unsqueeze(0)
+            if not torch.is_tensor(state):
+                state = torch.tensor(state, dtype=torch.float32, device=self.device).unsqueeze(0)         
             return self.policy_net(state).max(1).indices.view(1, 1)
 
     def select_action(self, state):
@@ -150,3 +165,7 @@ class DQN_Agent:
     def load(self, PATH):
         # Load policy from disk for later inference
         self.policy_net.load_state_dict(torch.load(PATH))
+
+    def close(self):
+        if self.device.type == "cuda":
+            torch.cuda.empty_cache()
