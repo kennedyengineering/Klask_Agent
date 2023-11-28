@@ -52,7 +52,7 @@ class DQN_Agent:
         self.GAMMA = 0.99       # GAMMA is the discount factor as mentioned in the previous section
         self.EPS_START = 0.9    # EPS_START is the starting value of epsilon
         self.EPS_END = 0.05     # EPS_END is the final value of epsilon
-        self.EPS_DECAY = 1000   # EPS_DECAY controls the rate of exponential decay of epsilon, higher means a slower decay
+        self.EPS_DECAY = 10000   # EPS_DECAY controls the rate of exponential decay of epsilon, higher means a slower decay
         self.TAU = 0.005        # TAU is the update rate of the target network
         self.LR = 1e-4          # LR is the learning rate of the ``AdamW`` optimizer
 
