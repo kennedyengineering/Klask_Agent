@@ -6,7 +6,6 @@ from modules.Klask_Simulator.klask_constants import KG_BOARD_HEIGHT, KG_BOARD_WI
 from keyboard_controller import KeyboardController
 
 import pygame
-
 import numpy as np
 
 # TODO: refactor into an enviornment class
@@ -100,6 +99,32 @@ def states_to_p2(states, length_scaler):
 
     return tuple(new_states)
 
+def reward_to_p1(game_states):
+    # Reward of +1 if win, -1 is lose, and 0 if tie
+
+    reward = 0
+
+    if KlaskSimulator.GameStates.P1_WIN in game_states:
+        reward += 1
+
+    if KlaskSimulator.GameStates.P2_WIN in game_states:
+        reward -= 1
+
+    return reward
+
+def reward_to_p2(game_states):
+    # Reward of +1 if win, -1 is lose, and 0 if tie
+
+    reward = 0
+
+    if KlaskSimulator.GameStates.P2_WIN in game_states:
+        reward += 1
+
+    if KlaskSimulator.GameStates.P1_WIN in game_states:
+        reward -= 1
+
+    return reward
+
 # Initialize the simulator
 sim = KlaskSimulator(render_mode="human")
 
@@ -119,9 +144,9 @@ w, h, _ = frame.shape
 screen = pygame.display.set_mode((w*2, h))
 pygame.display.set_caption('Klask Simulator')
 
-running = True
+done = False
 
-while running:
+while not done:
     # Check the event queue (only accessable if render_mode="human", is optional)
     for event in pygame.event.get():
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
@@ -172,20 +197,25 @@ while running:
 
     frame, game_states, agent_states = sim.step(action_to_p1(p1.getAction()), action_to_p2(p2.getAction()))
 
+    done = KlaskSimulator.GameStates.PLAYING not in game_states
+
     p1_frame = frame_to_p1(frame)
     p1_states = states_to_p1(agent_states, sim.length_scaler)
+    p1_reward = reward_to_p1(game_states)
 
     p2_frame = frame_to_p2(frame)
     p2_states = states_to_p2(agent_states, sim.length_scaler)
+    p2_reward = reward_to_p2(game_states)
 
     screen.blit(numpy_to_pygame(p1_frame), (0,0))
     screen.blit(numpy_to_pygame(p2_frame), (w,0))
     pygame.display.flip()
 
-    print(game_states)
+    # print(game_states)
     # print_states(agent_states)
     # print_states(p1_states)
-    print_states(p2_states)
+    # print_states(p2_states)
+    print(p1_reward, p2_reward)
     print()
     print()
 
