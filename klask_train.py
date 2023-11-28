@@ -49,7 +49,6 @@ for i_episode in tqdm(range(num_episodes)):
         p2_states = states_to_p2(agent_states, sim.length_scaler)
         p2_action_tensor = agent.apply_policy(p2_states)
         p2_action = action_to_p2(actions[p2_action_tensor.item()])
-        # Experiment: p2 also uses select_option, and p2 data is added to replay buffer
 
         # Apply action to environment
         _, game_states, next_agent_states = sim.step(p1_action, p2_action)
@@ -66,7 +65,6 @@ for i_episode in tqdm(range(num_episodes)):
 
         # Store the transition in memory
         agent.remember(p1_states, p1_action_tensor, states_to_p1(next_agent_states, sim.length_scaler), p1_reward)
-        # Experiment: p2 data is also added to replay buffer
 
         # Move to the next state
         agent_states = next_agent_states
