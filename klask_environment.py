@@ -107,6 +107,16 @@ def states_to_p2(states, length_scaler):
 
     return tuple(new_states)
 
+def mask_p2(states):
+    # Removes p2 from the state vector
+
+    if states is None:
+        return None
+
+    states_list = list(states)
+    del states_list[16:20]
+    return tuple(states_list)
+
 def reward_to_p1(game_states):
     # Reward of +1 if win, -1 is lose, and 0 if tie
 

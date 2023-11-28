@@ -1,7 +1,7 @@
 # Have a DQN agent play Klask with itself or a human
 
 from dqn_agent import DQN_Agent
-from klask_environment import actions, action_to_p1, action_to_p2, states_to_p1, states_to_p2
+from klask_environment import actions, action_to_p1, action_to_p2, states_to_p1, states_to_p2, mask_p2
 from modules.Klask_Simulator.klask_simulator import KlaskSimulator
 
 import argparse
@@ -21,7 +21,7 @@ n_actions = len(actions)
 
 # Get the number of state observations
 _, _, agent_states = sim.reset()
-n_observations = len(agent_states)
+n_observations = len(mask_p2(agent_states))
 
 # Create the agent
 agent = DQN_Agent(n_observations, n_actions)
@@ -33,10 +33,10 @@ done = False
 
 while not done:
     # Determine action
-    p1_states = states_to_p1(agent_states, sim.length_scaler)
+    p1_states = mask_p2(states_to_p1(agent_states, sim.length_scaler))
     p1_action = action_to_p1(actions[agent.apply_policy(p1_states).item()])
 
-    p2_states = states_to_p2(agent_states, sim.length_scaler)
+    p2_states = mask_p2(states_to_p2(agent_states, sim.length_scaler))
     p2_action = action_to_p2(actions[agent.apply_policy(p2_states).item()])
 
     # Apply action to environment

@@ -1,7 +1,7 @@
 # Train a DQN agent to play Klask
 
 from dqn_agent import DQN_Agent
-from klask_environment import actions, action_to_p1, action_to_p2, states_to_p1, states_to_p2, reward_to_p1, reward_to_p2
+from klask_environment import actions, action_to_p1, action_to_p2, states_to_p1, states_to_p2, reward_to_p1, reward_to_p2, mask_p2
 from modules.Klask_Simulator.klask_simulator import KlaskSimulator
 
 from itertools import count
@@ -22,7 +22,7 @@ n_actions = len(actions)
 
 # Get the number of state observations
 _, _, agent_states = sim.reset()
-n_observations = len(agent_states)
+n_observations = len(mask_p2(agent_states))
 
 # Create the agent
 agent = DQN_Agent(n_observations, n_actions)
@@ -42,11 +42,11 @@ for i_episode in tqdm(range(num_episodes)):
 
     for t in count():
         # Determine action
-        p1_states = states_to_p1(agent_states, sim.length_scaler)
+        p1_states = mask_p2(states_to_p1(agent_states, sim.length_scaler))
         p1_action_tensor = agent.select_action(p1_states)
         p1_action = action_to_p1(actions[p1_action_tensor.item()])
 
-        p2_states = states_to_p2(agent_states, sim.length_scaler)
+        p2_states = mask_p2(states_to_p2(agent_states, sim.length_scaler))
         p2_action_tensor = agent.apply_policy(p2_states)
         p2_action = action_to_p2(actions[p2_action_tensor.item()])
 
@@ -64,7 +64,7 @@ for i_episode in tqdm(range(num_episodes)):
             next_agent_states = None
 
         # Store the transition in memory
-        agent.remember(p1_states, p1_action_tensor, states_to_p1(next_agent_states, sim.length_scaler), p1_reward)
+        agent.remember(p1_states, p1_action_tensor, mask_p2(states_to_p1(next_agent_states, sim.length_scaler)), p1_reward)
 
         # Move to the next state
         agent_states = next_agent_states
