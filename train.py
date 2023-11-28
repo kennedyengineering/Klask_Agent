@@ -3,6 +3,12 @@ import gymnasium as gym
 from dqn_agent import DQN_Agent
 from itertools import count
 from tqdm import tqdm
+import argparse
+
+# Parse arguments
+parser = argparse.ArgumentParser()
+parser.add_argument("WEIGHTS_PATH", default="weights.torch")
+args = parser.parse_args()
 
 # Create the environment
 env = gym.make("CartPole-v1")
@@ -54,5 +60,5 @@ for i_episode in tqdm(range(num_episodes)):
             break
 
 print("Complete")
-agent.save("YO1")
+agent.save(args.WEIGHTS_PATH)
 agent.close()
