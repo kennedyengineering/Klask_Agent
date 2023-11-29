@@ -20,7 +20,6 @@ from modules.Klask_Simulator.klask_constants import KG_BOARD_HEIGHT, KG_BOARD_WI
 action_force = 0.01
 actions = ((action_force, 0),   # right
            (-action_force, 0),  # left
-           (0, 0),              # noop
            (0, action_force),   # up
            (0, -action_force))  # down
 
