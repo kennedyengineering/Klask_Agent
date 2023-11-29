@@ -64,7 +64,7 @@ class DQN_Agent:
         self.optimizer = optim.AdamW(self.policy_net.parameters(), lr=self.LR, amsgrad=True)
         
         # Replay buffer
-        self.memory = ReplayMemory(10000)
+        self.memory = ReplayMemory(5000)
 
         self.steps_done = 0
 
