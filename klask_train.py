@@ -52,8 +52,8 @@ for i_episode in tqdm(range(num_episodes)):
 
         # Apply action to environment
         _, game_states, next_agent_states = sim.step(p1_action, p2_action)
-        p1_reward = reward_to_p1(game_states)
-        p2_reward = reward_to_p2(game_states)
+        p1_reward = reward_to_p1(game_states, sim)
+        p2_reward = reward_to_p2(game_states, sim)
         
         # Determine next state
         terminated = KlaskSimulator.GameStates.PLAYING not in game_states

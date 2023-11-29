@@ -1,7 +1,8 @@
 # Use Klask_Simulator to train a DQN agent via policy self-play
 
 from modules.Klask_Simulator.klask_simulator import KlaskSimulator
-from modules.Klask_Simulator.klask_constants import KG_BOARD_HEIGHT, KG_BOARD_WIDTH
+from modules.Klask_Simulator.klask_constants import KG_BOARD_HEIGHT, KG_BOARD_WIDTH, KG_GOAL_OFFSET_X
+from math import dist
 
 # import pygame
 # def numpy_to_pygame(arr):
@@ -107,11 +108,17 @@ def states_to_p2(states, length_scaler):
 
     return tuple(new_states)
 
-def reward_to_p1(game_states):
+def reward_to_p1(game_states, sim):
     # Reward of +1 if win, -1 is lose, and 0 if tie
 
     reward = 0
 
+    # Reward ball position
+    ball_pos = sim.bodies["ball"].position
+    p2_goal_pos = ((KG_BOARD_WIDTH - KG_GOAL_OFFSET_X) * sim.length_scaler, (KG_BOARD_HEIGHT / 2) * sim.length_scaler)
+    reward += ((KG_BOARD_WIDTH * sim.length_scaler) - dist(ball_pos, p2_goal_pos)) / (KG_BOARD_WIDTH * sim.length_scaler)
+
+    # Reward endgame
     if KlaskSimulator.GameStates.P1_WIN in game_states:
         reward += 1
 
@@ -120,10 +127,15 @@ def reward_to_p1(game_states):
 
     return reward
 
-def reward_to_p2(game_states):
+def reward_to_p2(game_states, sim):
     # Reward of +1 if win, -1 is lose, and 0 if tie
 
     reward = 0
+
+    # Reward ball position
+    ball_pos = sim.bodies["ball"].position
+    p1_goal_pos = (KG_GOAL_OFFSET_X * sim.length_scaler, (KG_BOARD_HEIGHT / 2) * sim.length_scaler)
+    reward += ((KG_BOARD_WIDTH * sim.length_scaler) - dist(ball_pos, p1_goal_pos)) / (KG_BOARD_WIDTH * sim.length_scaler)
 
     if KlaskSimulator.GameStates.P2_WIN in game_states:
         reward += 1
