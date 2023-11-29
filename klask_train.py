@@ -47,7 +47,7 @@ for i_episode in tqdm(range(num_episodes)):
         p1_action = action_to_p1(actions[p1_action_tensor.item()])
 
         p2_states = states_to_p2(agent_states, sim.length_scaler)
-        p2_action_tensor = agent.apply_policy(p2_states)
+        p2_action_tensor = agent.select_action(p2_states)
         p2_action = action_to_p2(actions[p2_action_tensor.item()])
 
         # Apply action to environment
@@ -65,6 +65,7 @@ for i_episode in tqdm(range(num_episodes)):
 
         # Store the transition in memory
         agent.remember(p1_states, p1_action_tensor, states_to_p1(next_agent_states, sim.length_scaler), p1_reward)
+        agent.remember(p2_states, p2_action_tensor, states_to_p2(next_agent_states, sim.length_scaler), p2_reward)
 
         # Move to the next state
         agent_states = next_agent_states
