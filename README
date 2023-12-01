@@ -22,3 +22,9 @@ pip install -r requirements.txt
 
 also install Klask_Simulator dependencies:
 pip install -r modules/Klask_Simulator/requirements.txt
+
+
+#-------------------------------------------------------------------------
+Profiling:
+python3 -m cProfiler -o out.prof script.py
+snakeviz out.prof
