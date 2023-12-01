@@ -3,11 +3,13 @@ import gymnasium as gym
 from dqn_agent import DQN_Agent
 from itertools import count
 from tqdm import tqdm
+from plot_train import live_plot
 import argparse
 
 # Parse arguments
 parser = argparse.ArgumentParser()
-parser.add_argument("WEIGHTS_PATH", default="weights.torch")
+parser.add_argument("WEIGHTS_PATH")
+parser.add_argument("FIGURE_PATH", nargs='?', default="train.png")
 args = parser.parse_args()
 
 # Create the environment
@@ -29,16 +31,24 @@ if torch.cuda.is_available():
 else:
     num_episodes = 50
 
+# Create plot
+plotter = live_plot("TEST")
+
 # Run training
+episode_rewards = []
 for i_episode in tqdm(range(num_episodes)):
     # Initialize the environment and get it's state
     state, info = env.reset()
+
+    # Keep track of episode reward
+    episode_reward = 0
 
     for t in count():
         # Act on the environment
         action = agent.select_action(state)
         observation, reward, terminated, truncated, _ = env.step(action.item())
-        
+        episode_reward += reward
+
         # Determine next state
         done = terminated or truncated
 
@@ -59,6 +69,12 @@ for i_episode in tqdm(range(num_episodes)):
         if done:
             break
 
+    episode_rewards.append(episode_reward)
+    plotter.update(episode_rewards)
+
 print("Complete")
 agent.save(args.WEIGHTS_PATH)
 agent.close()
+
+plotter.save("TEST.png")
+plotter.close()
