@@ -76,5 +76,5 @@ print("Complete")
 agent.save(args.WEIGHTS_PATH)
 agent.close()
 
-plotter.save("TEST.png")
+plotter.save(args.FIGURE_PATH)
 plotter.close()
