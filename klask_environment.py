@@ -152,7 +152,7 @@ def reward_to_p1(game_states, sim=None, dense=False, dense_scale=0.01):
     if KlaskSimulator.GameStates.P1_SCORE in game_states:
         reward += 1.0
 
-    if KlaskSimulator.GameStates.P1_KLASK in game_states or KlaskSimulator.GameStates.P1_TWO_BISCUITS:
+    if KlaskSimulator.GameStates.P1_KLASK in game_states or KlaskSimulator.GameStates.P1_TWO_BISCUITS in game_states:
         reward -= 1.0
 
     return reward
