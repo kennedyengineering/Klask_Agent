@@ -1,7 +1,7 @@
 # Train a DQN agent to play Klask
 
 from dqn_agent import DQN_Agent, DQN
-from klask_environment import actions, action_to_p1, action_to_p2, states_to_p1, states_to_p2, reward_to_p1, reward_to_p2
+from klask_environment import actions, action_to_p1, action_to_p2, states_to_p1, states_to_p2, reward_to_p1
 from modules.Klask_Simulator.klask_simulator import KlaskSimulator
 
 from itertools import count
