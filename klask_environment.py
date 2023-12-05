@@ -108,27 +108,29 @@ def states_to_p2(states, length_scaler):
     return tuple(new_states)
 
 def reward_to_p1(game_states):
-    # Reward of +1 if win, -1 is lose, and 0 if tie
+    # +1 reward if scored goal
+    # -1 reward if klasked or 2x biscuits attached to puck
 
     reward = 0
 
-    if KlaskSimulator.GameStates.P1_WIN in game_states:
+    if KlaskSimulator.GameStates.P1_SCORE in game_states:
         reward += 1
 
-    if KlaskSimulator.GameStates.P2_WIN in game_states:
+    if KlaskSimulator.GameStates.P1_KLASK in game_states or KlaskSimulator.GameStates.P1_TWO_BISCUITS:
         reward -= 1
 
     return reward
 
-def reward_to_p2(game_states):
-    # Reward of +1 if win, -1 is lose, and 0 if tie
+# Deprecated since using self-play
+# def reward_to_p2(game_states):
+#     # Reward of +1 if win, -1 is lose, and 0 if tie
 
-    reward = 0
+#     reward = 0
 
-    if KlaskSimulator.GameStates.P2_WIN in game_states:
-        reward += 1
+#     if KlaskSimulator.GameStates.P2_WIN in game_states:
+#         reward += 1
 
-    if KlaskSimulator.GameStates.P1_WIN in game_states:
-        reward -= 1
+#     if KlaskSimulator.GameStates.P1_WIN in game_states:
+#         reward -= 1
 
-    return reward
+#     return reward
