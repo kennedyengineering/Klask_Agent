@@ -1,10 +1,7 @@
 # Use Klask_Simulator to train a DQN agent via policy self-play
 
 from modules.Klask_Simulator.klask_simulator import KlaskSimulator
-from modules.Klask_Simulator.klask_constants import KG_BOARD_HEIGHT, KG_BOARD_WIDTH, KG_GOAL_OFFSET_X
-
-import numpy as np
-from numpy.linalg import norm
+from modules.Klask_Simulator.klask_constants import KG_BOARD_HEIGHT, KG_BOARD_WIDTH
 
 # import pygame
 # def numpy_to_pygame(arr):
@@ -110,53 +107,17 @@ def states_to_p2(states, length_scaler):
 
     return tuple(new_states)
 
-def reward_to_p1(game_states, sim=None, dense=False, dense_scale=0.01):
-    # Sparse:
+def reward_to_p1(game_states):
     # +1 reward if scored goal
     # -1 reward if klasked or 2x biscuits attached to puck
 
-    # Dense:
-    # +1 * dense_scale if ball is hit directly at goal
-    # -1 * dense_scale if ball is hit directly away from goal
+    reward = 0
 
-    reward = 0.0
-
-    # Determine dense rewards
-    if dense:
-        goal = ((KG_BOARD_WIDTH - KG_GOAL_OFFSET_X) * sim.length_scaler, (KG_BOARD_HEIGHT / 2) * sim.length_scaler)
-
-        for contact_edge in sim.bodies["puck1"].contacts:
-            # Check if a collision with a static body
-            if contact_edge.contact.fixtureA.userData is None or contact_edge.contact.fixtureB.userData is None:
-                continue
-            # Check if a collision with ball
-            names = {contact_edge.contact.fixtureA.userData.name : contact_edge.contact.fixtureA, contact_edge.contact.fixtureB.userData.name : contact_edge.contact.fixtureB}
-            keys = list(names.keys())
-            if any(["puck1" in x for x in keys]) and any(["ball" in x for x in keys]) and contact_edge.contact.touching:
-                # Check if ball moving towards goal
-                ball = names[min(keys, key=len)]
-
-                ball_to_goal = (ball.body.position - goal) * -1
-                ball_to_goal.Normalize()
-
-                ball_vel = ball.body.linearVelocity * 1
-                ball_vel.Normalize()
-
-                if ball_vel.x == 0 and ball_vel.y == 0:
-                    continue
-
-                A = np.array(ball_to_goal)
-                B = np.array(ball_vel)
-                cosine = np.dot(A,B)/(norm(A)*norm(B))  # Similarity value [0,1] inclusive
-
-                reward += cosine * dense_scale
-
-    # Determine sparse rewards
     if KlaskSimulator.GameStates.P1_SCORE in game_states:
-        reward += 1.0
+        reward += 1
 
     if KlaskSimulator.GameStates.P1_KLASK in game_states or KlaskSimulator.GameStates.P1_TWO_BISCUITS in game_states:
-        reward -= 1.0
+        reward -= 1
 
     return reward
 
