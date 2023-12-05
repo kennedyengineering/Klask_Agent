@@ -142,6 +142,9 @@ def reward_to_p1(game_states, sim=None, dense=False, dense_scale=0.01):
                 ball_vel = ball.body.linearVelocity * 1
                 ball_vel.Normalize()
 
+                if ball_vel.x == 0 and ball_vel.y == 0:
+                    continue
+
                 A = np.array(ball_to_goal)
                 B = np.array(ball_vel)
                 cosine = np.dot(A,B)/(norm(A)*norm(B))  # Similarity value [0,1] inclusive
