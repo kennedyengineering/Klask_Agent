@@ -70,10 +70,9 @@ for i_episode in tqdm(range(args.episodes)):
 
         # Apply action to environment
         _, game_states, next_agent_states = sim.step(p1_action, p2_action)
-        p1_reward = reward_to_p1(game_states, sim, 1)
+        terminated, p1_reward = reward_to_p1(game_states, sim, 1)
         
         # Determine next state
-        terminated = KlaskSimulator.GameStates.PLAYING not in game_states
         truncated = t > args.max_episode_length
         done = terminated or truncated
 
