@@ -28,3 +28,8 @@ pip install -r modules/Klask_Simulator/requirements.txt
 Profiling:
 python3 -m cProfiler -o out.prof script.py
 snakeviz out.prof
+
+#--------------------------------------------------
+Class UML creation: 
+pip install pylint
+pyreverse -o png <python file>
